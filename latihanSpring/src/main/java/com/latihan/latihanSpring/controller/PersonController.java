@@ -1,11 +1,10 @@
 package com.latihan.latihanSpring.controller;
 
 import java.sql.Date;
-import java.time.Year;
-import java.util.ArrayList;
+////import java.time.Year;
+//import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +25,7 @@ import com.latihan.latihanSpring.entity.DetailBiodataEntity;
 import com.latihan.latihanSpring.entity.PersonEntity;
 import com.latihan.latihanSpring.repository.DetailBiodataRepository;
 import com.latihan.latihanSpring.repository.PersonRepository;
+import com.latihan.latihanSpring.service.PersonServiceImpl;
 
 @RestController
 @RequestMapping("/person") // ALAMAT UNTUK REST CONTROLLER // localhost:8500/person
@@ -34,6 +34,9 @@ public class PersonController {
 	private PersonRepository personRepository;
 	@Autowired
 	private DetailBiodataRepository detailBiodataRepository;
+	@Autowired
+	private PersonServiceImpl service;
+	
 	
 	@GetMapping("/get-all")
 	public List<PersonEntity> getPerson() {
@@ -141,14 +144,25 @@ public class PersonController {
 //	}
 	
 	
-	//MENGINPUTKAN DATA YANG BANYAK MENGGUNAKAN LIST
-	@PostMapping("/post-person")
-	public ResponseEntity<?> insertListPerson(@RequestBody BiodataDto dto){
-		List<PersonEntity> listPersonEntity = new ArrayList<>();
-		
-		PersonEntity personEntity = convertToPersonEntity(dto);
-		personRepository.save(personEntity);
-		return ResponseEntity.ok(personEntity);
+	//AYO PELAJARIN LAGI !!!
+	//MENGINPUTKAN DATA YANG BANYAK MENGGUNAKAN LIST	
+	@PostMapping("/post-multiPerson")
+	public ResponseEntity<?> insertListPerson(@RequestBody List<BiodataDto> dto){
+		for(BiodataDto e : dto) {
+			PersonEntity personEntity = convertToPersonEntity(e);
+			personRepository.save(personEntity);
+		}
+
+		return ResponseEntity.ok(dto);
+	}
+	
+	//INPUT DATA DENGAN MENGGUNAKAN SERVICE
+	@PostMapping("/post-multiPersonService")
+	public ResponseEntity<?> insertPersonService(@RequestBody List<BiodataDto> dto){
+		for(BiodataDto e : dto) {
+			service.insertPersonService(e);
+		}
+		return ResponseEntity.ok(dto);
 	}
 	
 	//UPDATE DATA
