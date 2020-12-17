@@ -25,6 +25,7 @@ import com.latihan.latihanSpring.entity.DetailBiodataEntity;
 import com.latihan.latihanSpring.entity.PersonEntity;
 import com.latihan.latihanSpring.repository.DetailBiodataRepository;
 import com.latihan.latihanSpring.repository.PersonRepository;
+import com.latihan.latihanSpring.service.BiodataServiceImpl;
 import com.latihan.latihanSpring.service.PersonServiceImpl;
 
 @RestController
@@ -36,7 +37,8 @@ public class PersonController {
 	private DetailBiodataRepository detailBiodataRepository;
 	@Autowired
 	private PersonServiceImpl service;
-	
+	@Autowired
+	private BiodataServiceImpl biodataService;
 	
 	@GetMapping("/get-all")
 	public List<PersonEntity> getPerson() {
@@ -165,6 +167,13 @@ public class PersonController {
 		return ResponseEntity.ok(dto);
 	}
 	
+	//INPUT SEMUA DATA MENGGUNAKAN SERVICE
+	@PostMapping("/post-insertService")
+	public ResponseEntity<?> insertService(@RequestBody BiodataDto dto){
+		DetailBiodataEntity detailBiodataEntity = biodataService.insertService(dto);
+		return ResponseEntity.ok(detailBiodataEntity);
+	}
+	
 	//UPDATE DATA
 	@PutMapping("/update-person/{idPerson}") //idPerson itu juga sebagai penamaan aja gak mesti namanya sama kayak variablenya
 	public ResponseEntity<?> update (@PathVariable Integer idPerson, 
@@ -219,26 +228,10 @@ public class PersonController {
 	//BIASANYA BUAT REGISTRASI INPUTAN LANGSUNG KE BEBERAPA TABEL SEKALIGUS
 	@PostMapping("/insert-all")
 	public ResponseEntity<?> insertAll(@RequestBody BiodataDto dto){
-		//deklarasi objek untuk table person dan tabel detail
-//		PersonEntity personEntity = new PersonEntity();
-//		DetailBiodataEntity detailBiodataEntity = new DetailBiodataEntity();
-		
 		//MENGGUNAKAN METHOD CONVERT
 		//KALO PAKE METHOD JANGAN LUPA KATA "NEW" NYA GAK USAH DITERAPIN KECUALI MANGGIL CONSTRUCTOR KOSONG !!!
 		PersonEntity personEntity = convertToPersonEntity(dto);
 		DetailBiodataEntity detailBiodataEntity = convertToDetailBiodataEntity(dto);
-		
-		//untuk menghubungkan ke tabel person
-//		personEntity.setFirstName(dto.getFirstName());
-//		personEntity.setLastName(dto.getLastName());
-		
-		//untuk penghubung ke table detail
-//		detailBiodataEntity.setDomisili(dto.getDomisili());
-//		detailBiodataEntity.setUmur(dto.getUmur());
-//		detailBiodataEntity.setJenisKelamin(dto.getJenisKelamin());
-//		detailBiodataEntity.setTanggalLahir(dto.getTanggalLahir());
-//		detailBiodataEntity.setPersonEntity(personEntity); //PENHUBUNG ANTARA DARI TABEL PERSON DAN DETAIL
-		
 		personRepository.save(personEntity);
 		detailBiodataEntity.setPersonEntity(personEntity);
 		detailBiodataRepository.save(detailBiodataEntity);
